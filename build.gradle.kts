@@ -1,9 +1,9 @@
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithTests
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 fun KotlinMultiplatformExtension.setupNative(name: String,
-                                             configure: KotlinNativeTargetWithTests.() -> Unit): KotlinNativeTargetWithTests {
+                                             configure: KotlinNativeTarget.() -> Unit): KotlinNativeTarget {
   val os = getCurrentOperatingSystem()
   return when {
     os.isLinux -> linuxX64(name, configure)
@@ -14,7 +14,7 @@ fun KotlinMultiplatformExtension.setupNative(name: String,
 }
 
 plugins {
-  kotlin("multiplatform") version "1.3.61"
+  kotlin("multiplatform") version "1.4.30"
   id("me.filippov.gradle.jvm.wrapper") version "0.9.2"
 }
 
@@ -37,7 +37,7 @@ kotlin {
     compilations["main"].cinterops.create("jni") {
       // JDK is required here, JRE is not enough
       val javaHome = File(System.getenv("JAVA_HOME") ?: System.getProperty("java.home"))
-      packageName = "org.jonnyzzz.jni"
+      packageName = "net.draycia.kterm"
       includeDirs(
               Callable { File(javaHome, "include") },
               Callable { File(javaHome, "include/darwin") },
@@ -48,14 +48,12 @@ kotlin {
   }
 
   val run by tasks.creating(JavaExec::class) {
-    main = "org.jonnyzzz.jni.java.JvmKt"
+    main = "net.draycia.kterm.java.JvmKt"
     group = "application"
 
     dependsOn(jvm.compilations.map { it.compileAllTaskName })
     dependsOn(native.compilations.map { it.compileAllTaskName })
     dependsOn(native.binaries.map { it.linkTaskName })
-
-    systemProperty("jonnyzzz.demo", "set")
 
     doFirst {
       classpath(

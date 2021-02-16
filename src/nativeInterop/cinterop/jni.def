@@ -1,1 +1,2 @@
-headers = jni.h
+# nativeInerop/cinterop
+headers = jni.h windows.h winnt.h

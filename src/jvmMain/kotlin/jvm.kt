@@ -1,18 +1,12 @@
-package org.jonnyzzz.jni.java
-
+package net.draycia.kterm.java
 
 fun main() {
-  requireNotNull(System.getProperty("jonnyzzz.demo")) {
-    "Please run this example via the `run` task in " +
-            "Gradle to make sure the native part is included correctly"
-  }
+  Runtime.getRuntime().loadLibrary("KTerm")
 
-  Runtime.getRuntime().loadLibrary("kotlin_jni_mix")
-
-  val ret = NativeHost().callInt(42)
-  println("ret from the native: $ret")
+  val handle = WindowHandle()
+  handle.createWindow("Test", 640, 480)
 }
 
-class NativeHost {
-  external fun callInt(x: Int) : Int
+class WindowHandle {
+  external fun createWindow(name: String, width: Int, height: Int)
 }
